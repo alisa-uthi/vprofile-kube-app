@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprormq
+  labels:
+    app: vprormq
+spec:
+  selector:
+    matchLabels:
+      app: vprormq
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vprormq
+    spec:
+      containers:
+        - name: vprormq
+          image: rabbitmq
+          ports:
+            - name: vprormq-port
+              containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  - name: app-secret
+                    key: rmq-pass
+            - name: RABBITMQ_DEFAULT_USER
+              value: "guest"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vpromq01    # Must match with what defined in application.properties
+spec:
+  ports:
+    - port: 15672
+      targetPort: vprormq-port
+      protocol: TCP
+  selector:
+    app: vprormq
+  type: ClusterIP
