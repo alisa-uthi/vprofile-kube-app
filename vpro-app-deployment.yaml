@@ -20,13 +20,6 @@ spec:
           ports:
             - name: vproapp-port
               containerPort: 8080
-      initContainers:       # To make sure DB and Memcache containers are created first before vproapp
-        - name: init-mydb
-          image: busybox
-          command: ['sh', '-c', 'until nslookup vprodb; do echo waiting for DB to initialize; sleep 2; done;']
-        - name: init-memcache
-          image: busybox
-          command: [ 'sh', '-c', 'until nslookup vprocache01; do echo waiting for Memcache to initialize; sleep 2; done;' ]
 ---
 apiVersion: v1
 kind: Service
